@@ -470,10 +470,12 @@ class _ScrollablePositionedListState extends State<ScrollablePositionedList>
       // Scroll directly.
       final localScrollAmount = itemPosition.itemLeadingEdge *
           primary.scrollController.position.viewportDimension;
+      var toPosition = primary.scrollController.offset +
+          localScrollAmount -
+          alignment * primary.scrollController.position.viewportDimension;
+      print('--- to: $toPosition');
       await primary.scrollController.animateTo(
-          primary.scrollController.offset +
-              localScrollAmount -
-              alignment * primary.scrollController.position.viewportDimension,
+          toPosition,
           duration: duration,
           curve: curve);
     } else {
@@ -487,11 +489,9 @@ class _ScrollablePositionedListState extends State<ScrollablePositionedList>
 
           opacity.parent = _opacityAnimation(opacityAnimationWeights).animate(
               AnimationController(vsync: this, duration: duration)..forward());
-          secondary.scrollController.jumpTo(-direction *
-              (_screenScrollCount *
-                      primary.scrollController.position.viewportDimension -
-                  alignment *
-                      secondary.scrollController.position.viewportDimension));
+          var toPosition = -direction * (_screenScrollCount * primary.scrollController.position.viewportDimension - alignment * secondary.scrollController.position.viewportDimension);
+          print('--- to: $toPosition');
+          secondary.scrollController.jumpTo(toPosition);
 
           startCompleter.complete(primary.scrollController.animateTo(
               primary.scrollController.offset + direction * scrollAmount,
